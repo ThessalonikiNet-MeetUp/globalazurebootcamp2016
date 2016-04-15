@@ -4,9 +4,16 @@
     "Microsoft.ApplicationInsights": "1.0.0",
     "Microsoft.ApplicationInsights.PersistenceChannel": "1.0.0",
     "Microsoft.ApplicationInsights.WindowsApps": "1.0.0",
-    "Microsoft.Azure.Devices.Client": "1.0.2",
+    "Microsoft.Azure.Amqp": "1.1.1",
+    "Microsoft.Azure.Devices.Client": "1.0.5",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
-    "Newtonsoft.Json": "6.0.8"
+    "Newtonsoft.Json": "6.0.8",
+    "PCLCrypto": "2.0.147",
+    "PInvoke.BCrypt": "0.3.2",
+    "PInvoke.Kernel32": "0.3.2",
+    "PInvoke.NCrypt": "0.3.2",
+    "PInvoke.Windows.Core": "0.3.2",
+    "Validation": "2.2.8"
   },
   "frameworks": {
     "uap10.0": {}

@@ -44,51 +44,42 @@ namespace ReadFromDevice
         }
         
 
-        private void SetTimer()
+        private  void SetTimer()
         {
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(4);
-            timer.Tick += Timer_Tick;
+            timer.Tick +=   Timer_Tick;
             timer.Start();
         }
-
-        private void Timer_Tick(object sender, object e)
+        Random r = new Random();
+        private async void  Timer_Tick(object sender, object e)
         {
             System.Diagnostics.Debug.WriteLine("tick");
-            if (senseHat != null)
-            {
-                senseHat.Sensors.HumiditySensor.Update();
-                var temperature = senseHat.Sensors.Temperature ?? 0;
-                senseHat.Sensors.ImuSensor.Update();
-                    var accelerationX = senseHat.Sensors.Acceleration?.X ?? 0;
-                    measurement.AccelerationX = accelerationX;
-                 measurement.Temperature = temperature;
-                SendSenseHatDataToCloudAsync(measurement).Wait();
-                System.Diagnostics.Debug.WriteLine(temperature);
-            
-            
-            }
-        }
-        public static async Task SendSenseHatDataToCloudAsync(Measurement data)
-        {
-            try {
-                string deviceConnectionString = "HostName=My8bitHub.azure-devices.net;SharedAccessKeyName=device;SharedAccessKey=I79fRHio3fizq+5seJoWwEoTRgpBMjLPu7jb307mbQY=";
-                var deviceClient = DeviceClient.CreateFromConnectionString(deviceConnectionString, "My8bitrpi", TransportType.Http1);
-                var messageInJson = JsonConvert.SerializeObject(data);
-                var message = new Message(Encoding.UTF8.GetBytes(messageInJson));
+            measurement.Temperature = r.Next(30);
+            //if (senseHat != null)
+            //{
+            //    senseHat.Sensors.HumiditySensor.Update();
+            //    var temperature = senseHat.Sensors.Temperature ?? 0;
+            //    senseHat.Sensors.ImuSensor.Update();
+            //        var accelerationX = senseHat.Sensors.Acceleration?.X ?? 0;
+            //        measurement.AccelerationX = accelerationX;
+            //     measurement.Temperature = temperature;
+            //    SendSenseHatDataToCloudAsync(measurement).Wait();
+            //    System.Diagnostics.Debug.WriteLine(temperature);
 
-                await deviceClient.SendEventAsync(message);
-            }catch (Exception exc)
-            {
-                System.Diagnostics.Debug.WriteLine(exc.Message);
-            }
+            // send them to the cloud
+            await AzureIoTHub.SendSenseHatDataToCloudAsync(measurement);
+
+            //}
         }
+        
 
         private void InitData()
         {
             measurement = new ReadFromDevice.Measurement();
             this.DataContext = measurement;
-            measurement.Temperature = 3;
+            measurement.Temperature = 0;
+            measurement.Location = "location1";
         }
 
         private void Read_Click(object sender, RoutedEventArgs e)
@@ -120,21 +111,21 @@ namespace ReadFromDevice
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Debug.Write("Loaded Started ");
-            SenseHatFactory.Singleton.GetSenseHat().ContinueWith(t =>
-              {
-                  if (t.IsCompleted)
-                  {
-                      senseHat = t.Result;
+           // System.Diagnostics.Debug.Write("Loaded Started ");
+           // SenseHatFactory.Singleton.GetSenseHat().ContinueWith(t =>
+           //   {
+           //       if (t.IsCompleted)
+           //       {
+           //           senseHat = t.Result;
                       
-                  }
-                  else
-                  {
-                      System.Diagnostics.Debug.WriteLine("get sense hat failed");
-                  }
-              }
-           );
-            System.Diagnostics.Debug.Write("Loaded Ended ");
+           //       }
+           //       else
+           //       {
+           //           System.Diagnostics.Debug.WriteLine("get sense hat failed");
+           //       }
+           //   }
+           //);
+           // System.Diagnostics.Debug.Write("Loaded Ended ");
 
         }
 
@@ -143,15 +134,18 @@ namespace ReadFromDevice
     public class Measurement : INotifyPropertyChanged
     {
         private double temperature;
-        private double accelerationX;
 
-        public double AccelerationX
-        {
-            get { return accelerationX; }
-            set { accelerationX = value; NotifyPropertyChanged(nameof(AccelerationX)); }
-        }
+        public string Location { get;  set; }
 
-       
+        //  private double accelerationX;
+
+        //public double AccelerationX
+        //{
+        //    get { return accelerationX; }
+        //    set { accelerationX = value; NotifyPropertyChanged(nameof(AccelerationX)); }
+        //}
+
+
         public double Temperature
         {
             get { return temperature; }
